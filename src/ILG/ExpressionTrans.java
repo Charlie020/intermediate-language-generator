@@ -39,24 +39,14 @@ public class ExpressionTrans {
         OperatorPriority.put("%=", 0);
     }
 
-    public String ClearSpaces(String text) {
-        String ans = new String("");
-        int len = text.length();
-        for (int i = 0; i < len; ++i) {
-            if (text.charAt(i) == ' ') continue;
-            ans += text.charAt(i);
-        }
-        return ans;
-    }
-
     // 求逆波兰式
     public String InversePolish(String text) {
-        text = ClearSpaces(text);
-        String ans = new String("");
-        Stack<String> Operator = new Stack<>();
+        Check(text); // 检查表达式是否合法
 
-        int len = text.length();
+        Stack<String> Operator = new Stack<>();
+        String ans = new String("");
         String op = new String();
+        int len = text.length();
         for (int i = 0; i < len; ++i) {
             char ch = text.charAt(i);
             if (isDigit(ch) || isLetter(ch)) {
@@ -71,17 +61,17 @@ public class ExpressionTrans {
                 while (!Operator.isEmpty() && !Operator.peek().equals("(")) ans += " " + Operator.pop();
                 if (!Operator.isEmpty() && Operator.peek().equals("(")) Operator.pop();
             } else if (isOperator(ch)) {
-                // 运算符
                 ans += " ";
+                // 处理某些不只一个字符的运算符，如++ --
                 while (i < len && isOperator(text.charAt(i))) {
                     op += text.charAt(i);
                     ++i;
                 }
                 --i;
-                // 当前运算符优先级大于栈顶运算符则入栈，反之退栈，直至当前运算符优先级不再大于栈顶运算符
+                // 当前运算符优先级大于栈顶运算符则入栈
                 if (Operator.isEmpty() || Operator.peek().equals("(") ||
                         OperatorPriority.get(op) > OperatorPriority.get(Operator.peek())) Operator.push(op);
-                else {
+                else {  // 反之退栈，直至当前运算符优先级不再大于栈顶运算符
                     while (!Operator.isEmpty() && !Operator.peek().equals("(")
                             && OperatorPriority.get(op) < OperatorPriority.get(Operator.peek())) ans += Operator.pop() + " ";
                     Operator.push(op);
@@ -94,6 +84,21 @@ public class ExpressionTrans {
         return ans;
     }
 
+    // 三元式
+    public void ThreeAddressCode(String text) {
+
+    }
+
+    // 四元式
+    public void Quadruple(String text) {
+
+    }
+
+    private boolean Check(String text) {
+
+        return true;
+    }
+
     private boolean isDigit(char ch) {
         if (ch >= '0' && ch <= '9') return true;
         return false;
@@ -104,8 +109,9 @@ public class ExpressionTrans {
         return false;
     }
     private boolean isOperator(char ch) {
-        if (ch == '+' || ch == '-' || ch == '*' || ch == '/'
-        || ch == '=' || ch == '!') return true;
+        if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%'
+        || ch == '=' || ch == '!' || ch == '>' || ch == '<' || ch == '&'
+        || ch == '|' || ch == '^' || ch == '~') return true;
         return false;
     }
 }

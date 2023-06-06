@@ -24,9 +24,13 @@ public class Window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = input.getText();
+                ClearSpaces(text);
+
                 ExpressionTrans ET = new ExpressionTrans();
                 String IP = ET.InversePolish(text);
                 System.out.println(IP);
+                ET.ThreeAddressCode(IP);
+                ET.Quadruple(IP);
             }
         });
 
@@ -59,5 +63,15 @@ public class Window extends JFrame {
         this.setBounds(400, 200, 800, 600);
         this.setTitle("Intermediate Language Generator");
         this.setVisible(true);
+    }
+
+    private String ClearSpaces(String text) {
+        String ans = new String("");
+        int len = text.length();
+        for (int i = 0; i < len; ++i) {
+            if (text.charAt(i) == ' ') continue;
+            ans += text.charAt(i);
+        }
+        return ans;
     }
 }
