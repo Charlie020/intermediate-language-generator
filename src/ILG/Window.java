@@ -31,14 +31,17 @@ public class Window extends JFrame {
                     JOptionPane.showMessageDialog(Window.this, "请输入内容！");
                 } else {
                     String text = input.getText();
-                    text = ClearSpaces(text);
 
                     ExpressionTrans ET = new ExpressionTrans();
-                    String IP = ET.InversePolish(text);                // 产生逆波兰式
-                    String ans[] = ET.ThreeAddressCode_Quadruple(IP);  // 利用逆波兰式产生三元式和四元式
-                    String TAC = ans[0];
-                    String QDP = ans[1];
-                    outputArea.setText("逆波兰式：\n" + IP + "\n三元式：\n" + TAC + "\n四元式：\n" + QDP);
+                    if (ET.Check(text)) {
+                        String IP = ET.InversePolish(text);                // 产生逆波兰式
+                        String ans[] = ET.ThreeAddressCode_Quadruple(IP);  // 利用逆波兰式产生三元式和四元式
+                        String TAC = ans[0];
+                        String QDP = ans[1];
+                        outputArea.setText("逆波兰式：\n" + IP + "\n三元式：\n" + TAC + "\n四元式：\n" + QDP);
+                    } else {
+                        JOptionPane.showMessageDialog(Window.this, "表达式不合法！");
+                    }
                 }
             }
         });
@@ -72,15 +75,5 @@ public class Window extends JFrame {
         this.setBounds(400, 200, 800, 600);
         this.setTitle("Intermediate Language Generator");
         this.setVisible(true);
-    }
-
-    private String ClearSpaces(String text) {
-        String ans = new String("");
-        int len = text.length();
-        for (int i = 0; i < len; ++i) {
-            if (text.charAt(i) == ' ') continue;
-            ans += text.charAt(i);
-        }
-        return ans;
     }
 }

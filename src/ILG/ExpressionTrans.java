@@ -1,11 +1,14 @@
 package ILG;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExpressionTrans {
-    Map<String, Integer> OperatorPriority = new HashMap<>();
+    private Map<String, Integer> OperatorPriority = new HashMap<>();
+    private Pattern pat = Pattern.compile("\\+|\\-|\\*|/|%|\\+\\+|\\-\\-|<<|>>|!|~|<|>|=|==|!=|\\+=|\\-=|\\*=|/=|%=|&&|\\|\\||&|\\^|\\|");
     public ExpressionTrans() {
         OperatorPriority.put("!", 6);
         OperatorPriority.put("++", 6);
@@ -41,7 +44,7 @@ public class ExpressionTrans {
 
     // 求逆波兰式
     public String InversePolish(String text) {
-        Check(text); // 检查表达式是否合法
+        text = ClearSpaces(text); // 清除空格
 
         Stack<String> Operator = new Stack<>();
         String ans = new String("");
@@ -60,11 +63,11 @@ public class ExpressionTrans {
                 if (ans.charAt(ans.length() - 1) == ' ') ans = ans.substring(0, ans.length() - 1); // 处理格式，两个参数间至多一个空格，方便处理
                 while (!Operator.isEmpty() && !Operator.peek().equals("(")) ans += " " + Operator.pop();
                 if (!Operator.isEmpty() && Operator.peek().equals("(")) Operator.pop();
-            } else if (isOperator(ch)) {
+            } else if (isOperator(Character.toString(ch))) {
                 ans += " ";
                 op += ch;
                 // 处理某些不只一个字符的运算符，如++ --
-                if (i < len && isOperator(text.charAt(i + 1))) {
+                if (i < len && isOperator(Character.toString(text.charAt(i + 1)))) {
                     op += text.charAt(i + 1);
                     ++i;
                 }
@@ -107,8 +110,8 @@ public class ExpressionTrans {
                 TACArgs.push(args);
                 QDPArgs.push(args);
                 args = "";
-            } else if (isOperator(ch)) {            // 遇运算符则弹出参数
-                while (isOperator(ch)) {
+            } else if (isOperator(Character.toString(ch))) {            // 遇运算符则弹出参数
+                while (isOperator(Character.toString(ch))) {
                     op += ch;
                     ++i;
                     ch = IP.charAt(i);
@@ -148,8 +151,29 @@ public class ExpressionTrans {
         return ans;
     }
 
-    private boolean Check(String text) {
+    private String ClearSpaces(String text) {
+        String ans = new String("");
+        int len = text.length();
+        for (int i = 0; i < len; ++i) {
+            if (text.charAt(i) == ' ') continue;
+            ans += text.charAt(i);
+        }
+        return ans;
+    }
 
+    public boolean Check(String text) {
+//        text = ClearSpaces(text);
+
+//        int len = text.length();
+//        String op = new String();
+//        for (int i = 0; i < len; ++i) {
+//            if (text.charAt(i) == '(' || text.charAt(i) == ')') continue;
+//            else if (isOperator(Character.toString(text.charAt(i)))){
+//                while (i < len && isOperator(Character.toString(text.charAt(i)))) op += text.charAt(i++);
+//                --i;
+//                if (!isOperator(op)) return false;
+//            }
+//        }
         return true;
     }
 
@@ -162,10 +186,8 @@ public class ExpressionTrans {
         if (ch >= 'A' && ch <= 'Z') return true;
         return false;
     }
-    private boolean isOperator(char ch) {
-        if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%'
-        || ch == '=' || ch == '!' || ch == '>' || ch == '<' || ch == '&'
-        || ch == '|' || ch == '^' || ch == '~') return true;
+    private boolean isOperator(String st) {
+        if (pat.matcher(st).find()) return true;
         return false;
     }
 }
