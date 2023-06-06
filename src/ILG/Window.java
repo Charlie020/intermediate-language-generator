@@ -23,7 +23,10 @@ public class Window extends JFrame {
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                String text = input.getText();
+                ExpressionTrans ET = new ExpressionTrans();
+                String IP = ET.InversePolish(text);
+                System.out.println(IP);
             }
         });
 
