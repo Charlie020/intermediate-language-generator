@@ -62,12 +62,12 @@ public class ExpressionTrans {
                 if (!Operator.isEmpty() && Operator.peek().equals("(")) Operator.pop();
             } else if (isOperator(ch)) {
                 ans += " ";
+                op += ch;
                 // 处理某些不只一个字符的运算符，如++ --
-                while (i < len && isOperator(text.charAt(i))) {
-                    op += text.charAt(i);
+                if (i < len && isOperator(text.charAt(i + 1))) {
+                    op += text.charAt(i + 1);
                     ++i;
                 }
-                --i;
                 // 当前运算符优先级大于栈顶运算符则入栈
                 if (Operator.isEmpty() || Operator.peek().equals("(") ||
                         OperatorPriority.get(op) > OperatorPriority.get(Operator.peek())) Operator.push(op);
@@ -117,11 +117,11 @@ public class ExpressionTrans {
                 ++count;
                 if (op.equals("++") || op.equals("--") || op.equals("!") || op.equals("~")) {   // 单目运算符
                     // 三元组
-                    String TACFirst = TACArgs.peek();
+                    String TACFirst = TACArgs.pop();
                     TAC += "(" + count + ") " + "(" + op + ", " + TACFirst + ", _ " + ")\n";
 
                     // 四元组
-                    String QDPFirst = QDPArgs.peek();
+                    String QDPFirst = QDPArgs.pop();
                     QDP += "(" + count + ") " + "(" + op + ", " + QDPFirst + ", _ " + ", T" + count + ")\n";
                 } else {        // 双目运算符
                     // 三元组
