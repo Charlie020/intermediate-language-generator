@@ -26,21 +26,17 @@ public class Window extends JFrame {
         // 监听器
         confirm.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {           // 点击按钮后开始产生逆波兰式、三元式、四元式
                 if (input.getText().equals("Input here")) {
                     JOptionPane.showMessageDialog(Window.this, "请输入内容！");
                 } else {
                     String text = input.getText();
-
                     ExpressionTrans ET = new ExpressionTrans();
-                    if (ET.Check(text)) {
-                        String IP = ET.InversePolish(text);                // 产生逆波兰式
-                        String ans[] = ET.ThreeAddressCode_Quadruple(IP);  // 利用逆波兰式产生三元式和四元式
-                        String TAC = ans[0];
-                        String QDP = ans[1];
-                        outputArea.setText("逆波兰式：\n" + IP + "\n三元式：\n" + TAC + "\n四元式：\n" + QDP);
+                    String res = ET.Trans(text);
+                    if (res.equals("表达式不合法！")) {
+                        JOptionPane.showMessageDialog(Window.this, res);
                     } else {
-                        JOptionPane.showMessageDialog(Window.this, "表达式不合法！");
+                        outputArea.setText(res);
                     }
                 }
             }

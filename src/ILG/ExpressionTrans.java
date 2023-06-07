@@ -1,49 +1,71 @@
 package ILG;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
-
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExpressionTrans {
     private Map<String, Integer> OperatorPriority = new HashMap<>();
-    private Pattern pat = Pattern.compile("\\+|\\-|\\*|/|%|\\+\\+|\\-\\-|<<|>>|!|~|<|>|=|==|!=|\\+=|\\-=|\\*=|/=|%=|&&|\\|\\||&|\\^|\\|");
+    private Pattern Pat = Pattern.compile("\\+\\+|--|~|!|\\*|/|%|\\+|-|<<|>>|<|<=|>|>=|==|!=|&|\\^|\\||&&|\\|\\||\\?:|=|\\+=|-=|\\*=|/=|%=|<<=|>>=|&=|\\|=|\\^=|,");
     public ExpressionTrans() {
-        OperatorPriority.put("!", 6);
-        OperatorPriority.put("++", 6);
-        OperatorPriority.put("--", 6);
-        OperatorPriority.put("~", 6);
+        // 值越大越优先
+        OperatorPriority.put("++", 15);
+        OperatorPriority.put("--", 15);
+        OperatorPriority.put("~", 15);
+        OperatorPriority.put("!", 15);;
 
-        OperatorPriority.put("*", 5);
-        OperatorPriority.put("/", 5);
-        OperatorPriority.put("%", 5);
+        OperatorPriority.put("*", 14);
+        OperatorPriority.put("/", 14);
+        OperatorPriority.put("%", 14);
 
-        OperatorPriority.put("+", 4);
-        OperatorPriority.put("-", 4);
+        OperatorPriority.put("+", 13);
+        OperatorPriority.put("-", 13);
 
-        OperatorPriority.put("<<", 3);
-        OperatorPriority.put(">>", 3);
+        OperatorPriority.put("<<", 12);
+        OperatorPriority.put(">>", 12);
 
-        OperatorPriority.put("==", 2);
-        OperatorPriority.put("!=", 2);
+        OperatorPriority.put("<", 11);
+        OperatorPriority.put("<=", 11);
+        OperatorPriority.put(">", 11);
+        OperatorPriority.put(">=", 11);
 
-        OperatorPriority.put("&", 1);
-        OperatorPriority.put("|", 1);
-        OperatorPriority.put("^", 1);
-        OperatorPriority.put("&&", 1);
-        OperatorPriority.put("||", 1);
+        OperatorPriority.put("==", 10);
+        OperatorPriority.put("!=", 10);
 
-        OperatorPriority.put("=", 0);
-        OperatorPriority.put("+=", 0);
-        OperatorPriority.put("-=", 0);
-        OperatorPriority.put("*=", 0);
-        OperatorPriority.put("/=", 0);
-        OperatorPriority.put("%=", 0);
+        OperatorPriority.put("&", 9);
+        OperatorPriority.put("^", 8);
+        OperatorPriority.put("|", 7);
+        OperatorPriority.put("&&", 6);
+        OperatorPriority.put("||", 5);
+        OperatorPriority.put("?:", 4);
+
+        OperatorPriority.put("=", 3);
+        OperatorPriority.put("+=", 3);
+        OperatorPriority.put("-=", 3);
+        OperatorPriority.put("*=", 3);
+        OperatorPriority.put("/=", 3);
+        OperatorPriority.put("%=", 3);
+        OperatorPriority.put("<<=", 3);
+        OperatorPriority.put(">>=", 3);
+        OperatorPriority.put("&=", 3);
+        OperatorPriority.put("|=", 3);
+        OperatorPriority.put("^=", 3);
+
+        OperatorPriority.put(",", 2);
+    }
+
+    public String Trans(String text) {
+        ClearSpaces(text);
+
+        String IP = InversePolish(text);                // 产生逆波兰式
+        if (!Check(IP)) return "表达式不合法！";           // 利用逆波兰式判断表达式是否合法
+        String ans[] = ThreeAddressCode_Quadruple(IP);  // 利用逆波兰式产生三元式和四元式
+        String TAC = ans[0];
+        String QDP = ans[1];
+        return "逆波兰式：\n" + IP + "\n三元式：\n" + TAC + "\n四元式：\n" + QDP;
     }
 
     // 求逆波兰式
-    public String InversePolish(String text) {
+    private String InversePolish(String text) {
         text = ClearSpaces(text); // 清除空格
 
         Stack<String> Operator = new Stack<>();
@@ -67,7 +89,7 @@ public class ExpressionTrans {
                 ans += " ";
                 op += ch;
                 // 处理某些不只一个字符的运算符，如++ --
-                if (i < len && isOperator(Character.toString(text.charAt(i + 1)))) {
+                if (i + 1 < len && isOperator(Character.toString(text.charAt(i + 1)))) {
                     op += text.charAt(i + 1);
                     ++i;
                 }
@@ -89,7 +111,7 @@ public class ExpressionTrans {
     }
 
     // 求三元式和四元式
-    public String[] ThreeAddressCode_Quadruple(String IP) {
+    private String[] ThreeAddressCode_Quadruple(String IP) {
         Stack<String> TACArgs = new Stack<>();  // 三元式参数栈
         Stack<String> QDPArgs = new Stack<>();  // 四元式参数栈
         String TAC = new String("");
@@ -151,6 +173,7 @@ public class ExpressionTrans {
         return ans;
     }
 
+    // 清除空格
     private String ClearSpaces(String text) {
         String ans = new String("");
         int len = text.length();
@@ -161,7 +184,8 @@ public class ExpressionTrans {
         return ans;
     }
 
-    public boolean Check(String text) {
+    // 检查逆波兰式是否合法
+    private boolean Check(String text) {
 //        text = ClearSpaces(text);
 
 //        int len = text.length();
@@ -187,7 +211,7 @@ public class ExpressionTrans {
         return false;
     }
     private boolean isOperator(String st) {
-        if (pat.matcher(st).find()) return true;
+        if (Pat.matcher(st).find()) return true;
         return false;
     }
 }
