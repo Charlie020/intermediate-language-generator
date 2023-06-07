@@ -32,11 +32,12 @@ public class Window extends JFrame {
                 } else {
                     String text = input.getText();
                     ExpressionTrans ET = new ExpressionTrans();
-                    String res = ET.Trans(text);
-                    if (res.equals("表达式不合法！")) {
-                        JOptionPane.showMessageDialog(Window.this, res);
-                    } else {
-                        outputArea.setText(res);
+                    Object res = ET.Trans(text);
+                    if (res instanceof Boolean) {
+                        JOptionPane.showMessageDialog(Window.this, "表达式不合法！");
+                    } else if (res instanceof String[]) {
+                        String[] rest = (String[])res;
+                        outputArea.setText("逆波兰式：\n" + rest[0] + "\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
                     }
                 }
             }

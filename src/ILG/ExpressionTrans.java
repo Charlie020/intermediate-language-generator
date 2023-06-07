@@ -53,15 +53,16 @@ public class ExpressionTrans {
         OperatorPriority.put(",", 2);
     }
 
-    public String Trans(String text) {
+    public Object Trans(String text) {
         ClearSpaces(text);
 
         String IP = InversePolish(text);                // 产生逆波兰式
-        if (!Check(IP)) return "表达式不合法！";           // 利用逆波兰式判断表达式是否合法
+        if (!Check(IP)) return false;           // 利用逆波兰式判断表达式是否合法
         String ans[] = ThreeAddressCode_Quadruple(IP);  // 利用逆波兰式产生三元式和四元式
         String TAC = ans[0];
         String QDP = ans[1];
-        return "逆波兰式：\n" + IP + "\n三元式：\n" + TAC + "\n四元式：\n" + QDP;
+        String[] res = {IP, TAC, QDP};
+        return res;
     }
 
     // 求逆波兰式
