@@ -54,9 +54,9 @@ public class ExpressionTrans {
                         op += cht;
                         ++i;
                         if (i + 1 < len && isOperator(Character.toString(text.charAt(i + 1)))) { // 处理三个字符的运算符
-                            char chtt = text.charAt(i + 1);
-                            if (isOperator(op + chtt)) {
-                                op += chtt;
+                            char chtTmp = text.charAt(i + 1);
+                            if (isOperator(op + chtTmp)) {
+                                op += chtTmp;
                                 ++i;
                             }
                         }
