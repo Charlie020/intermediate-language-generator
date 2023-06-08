@@ -37,7 +37,7 @@ public class Window extends JFrame {
                         JOptionPane.showMessageDialog(Window.this, "表达式不合法！");
                     } else if (res instanceof String[]) {
                         String[] rest = (String[])res;
-                        outputArea.setText("逆波兰式：\n" + rest[0] + "\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
+                        outputArea.setText("逆波兰式：\n" + rest[0] + "\n\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
                     }
                 }
             }
