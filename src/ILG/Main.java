@@ -5,14 +5,16 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Intermediate Language Generator");
+        JFrame frame = new JFrame();
         Panel1 panel1 = new Panel1();
 
-        frame.add(panel1);
+        frame.add(panel1, BorderLayout.CENTER);
 
-        // 其他设置
-        frame.setBounds(500, 200, 800, 600);
+        // 窗口设置
+        frame.setTitle("Intermediate Language Generator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1000, 600);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 }
