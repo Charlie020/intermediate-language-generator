@@ -37,10 +37,10 @@ public class Panel1 extends JPanel {
                         Expressions.setText("逆波兰式：\n" + rest[0] + "\n\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
                         AbstractGrammarTreeGenerate AGT = new AbstractGrammarTreeGenerate();
                         TreeNode AGTTree = AGT.TreeGenerate(rest[0]);
-                        GrammarTree.setText("先序遍历：" + AGTTree.PreOrderSequence()
+                        GrammarTree.setText("抽象语法树：\n" + AGTTree.TreeDisplay()
+                                + "\n先序遍历：" + AGTTree.PreOrderSequence()
                                 + "\n中序遍历：" + AGTTree.InOrderSequence()
                                 + "\n后序遍历：" + AGTTree.PostOrderSequence());
-                        AGTTree.TreeDisplay();
                     }
                 }
             }
