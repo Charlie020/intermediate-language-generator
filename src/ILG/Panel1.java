@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Panel1 extends JPanel {
+public class Panel1 extends JPanel{
     private JLabel inputNote = new JLabel("Expression:");
     private JTextField inputField = new JTextField("Input here", 20);
     private JButton generate = new JButton("Generate");
@@ -38,10 +38,20 @@ public class Panel1 extends JPanel {
                         AbstractGrammarTreeGenerate AGT = new AbstractGrammarTreeGenerate();
                         TreeNode AGTTree = AGT.TreeGenerate(rest[0]);
                         GrammarTree.setText("抽象语法树：\n" + AGTTree.TreeDisplay()
-                                + "\n先序遍历：" + AGTTree.PreOrderSequence()
+                                + "先序遍历：" + AGTTree.PreOrderSequence()
                                 + "\n中序遍历：" + AGTTree.InOrderSequence()
                                 + "\n后序遍历：" + AGTTree.PostOrderSequence());
                     }
+                }
+            }
+        });
+
+        inputField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // 在输入过程中按下回车，效果与点击按钮相同
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                    generate.doClick();
                 }
             }
         });
@@ -71,13 +81,15 @@ public class Panel1 extends JPanel {
         // 提示信息
         GridBagConstraints textGBC = new GridBagConstraints();
         textGBC.insets = new Insets(3, 3, 3, 3);
-        inputNote.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        inputNote.setFont(new Font("Times New Roman", Font.PLAIN, 24));
         this.add(inputNote, textGBC);
 
         // 输入栏
         GridBagConstraints inputGBC = new GridBagConstraints();
         inputGBC.insets = new Insets(3, 3, 3, 3);
-        inputField.setFont(new Font("Times New Roman", Font.PLAIN,18));
+        inputGBC.ipadx = 20;
+        inputGBC.ipady = 10;
+        inputField.setFont(new Font("Times New Roman", Font.PLAIN,24));
         inputField.setForeground(Color.GRAY);
         this.add(inputField, inputGBC);
 
@@ -85,7 +97,7 @@ public class Panel1 extends JPanel {
         GridBagConstraints buttonGBC = new GridBagConstraints();
         buttonGBC.insets = new Insets(3, 3, 3, 3);
         buttonGBC.gridwidth = GridBagConstraints.REMAINDER;
-        generate.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        generate.setFont(new Font("Times New Roman", Font.PLAIN, 24));
         this.add(generate, buttonGBC);
 
         // 表达式区域

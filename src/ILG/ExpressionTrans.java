@@ -45,6 +45,7 @@ public class ExpressionTrans {
                 while (!Operator.isEmpty() && !Operator.peek().equals("(")) ans.append(" ").append(Operator.pop());
                 if (!Operator.isEmpty() && Operator.peek().equals("(")) Operator.pop();
             } else if (isOperator(Character.toString(ch))) {
+                if (ans.charAt(ans.length() - 1) == ' ') ans = new StringBuilder(ans.substring(0, ans.length() - 1));
                 ans.append(" ");
                 op += ch;
                 // 处理某些不只一个字符的运算符

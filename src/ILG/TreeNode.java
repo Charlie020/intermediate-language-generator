@@ -4,10 +4,8 @@ import java.util.*;
 
 public class TreeNode {
     String val;
-    TreeNode left;
-    TreeNode right;
-    String OrderSequence;
-    String Display;
+    TreeNode left, right;
+    String OrderSequence, Display;
 
     // 构造函数
     public TreeNode(String val, TreeNode left, TreeNode right) {
@@ -21,7 +19,7 @@ public class TreeNode {
         this.right = null;
     }
 
-    // 打印二叉树
+    // 打印二叉树的调用接口
     public String TreeDisplay() {
         int maxLevel = GetTreeLevel(this);
         Display = "";
@@ -30,6 +28,7 @@ public class TreeNode {
     }
 
 
+    // 递归，打印抽象语法树
     private void TreeFormDisplay(List<TreeNode> Node, int level, int maxLevel) {
         if (Node == null || Node.isEmpty() || isAllElementsNull(Node)) return;
 
@@ -38,7 +37,7 @@ public class TreeNode {
         int firstSpaces = (int) Math.pow(2, (floor)) - 1;
         int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
         PrintSpaces(firstSpaces);
-
+        // a = 1 + (1 + 2) * 3 + (1 << 3) / 2
         List<TreeNode> newNode = new ArrayList<>();
         for (TreeNode n : Node) {
             if (n != null) {
@@ -81,6 +80,7 @@ public class TreeNode {
         TreeFormDisplay(newNode, level + 1, maxLevel);
     }
 
+    // 求树高
     public int GetTreeLevel(TreeNode root) {
         if (root == null) return 0;
         int leftLevel = GetTreeLevel(root.left);
@@ -88,10 +88,12 @@ public class TreeNode {
         return Math.max(leftLevel, rightLevel) + 1;
     }
 
+    // 打印空格，维护格式
     private void PrintSpaces(int count) {
         for (int i = 0; i < count; i++) Display += " ";
     }
 
+    // 判断是否所有元素为空
     private <T> boolean isAllElementsNull(List<T> list) {
         for (Object object : list)
             if (object != null) return false;
@@ -133,8 +135,8 @@ public class TreeNode {
     }
     private void PostOrder(TreeNode root) {
         if (root == null) return ;
-        OrderSequence += root.val + " ";
         PostOrder(root.left);
         PostOrder(root.right);
+        OrderSequence += root.val + " ";
     }
 }

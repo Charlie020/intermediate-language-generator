@@ -13,7 +13,7 @@ public class Main {
         // 窗口设置
         frame.setTitle("Intermediate Language Generator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 600);
+        frame.setSize(1100, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
