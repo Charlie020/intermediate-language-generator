@@ -90,52 +90,43 @@ public class ExpressionTrans {
         StringBuilder TAC = new StringBuilder();
         StringBuilder QDP = new StringBuilder();
 
-        String args = "";
-        StringBuilder op = new StringBuilder();
         IP += " "; // 由于逆波兰式中各参数间以空格相隔，此处方便得到最后一个三元式
         int i = 0, len = IP.length(), count = 0;
+        String tmp = "";
         while (i < len) {
-            char ch = IP.charAt(i);
-            if (isDigit(ch) || isLetter(ch)) {      // 遇参数直接入栈
-                while (isDigit(ch) || isLetter(ch)) {
-                    args += ch;
-                    ++i;
-                    ch = IP.charAt(i);
-                }
-                TACArgs.push(args);
-                QDPArgs.push(args);
-                args = "";
-            } else if (isOperator(Character.toString(ch))) {            // 遇运算符则弹出参数
-                while (isOperator(Character.toString(ch))) {
-                    op.append(ch);
-                    ++i;
-                    ch = IP.charAt(i);
-                }
-                // 产生三元式
-                ++count;
-                if (SingleOperator.contains(op.toString())) {   // 单目运算符
-                    // 三元组
-                    String TACFirst = TACArgs.pop();
-                    TAC.append("(").append(count).append(") ").append("(").append(op).append(", ").append(TACFirst).append(", _ ").append(")\n");
+            if (IP.charAt(i) == ' ') {      // 遇参数直接入栈
+                if (!isOperator(tmp)) {
+                    TACArgs.push(tmp);
+                    QDPArgs.push(tmp);
+                } else if (isOperator(tmp)) {
+                    // 产生三元式
+                    ++count;
+                    if (isSingleOperator(tmp)) {   // 单目运算符
+                        // 三元组
+                        String TACFirst = TACArgs.pop();
+                        TAC.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(TACFirst).append(", _ ").append(")\n");
 
-                    // 四元组
-                    String QDPFirst = QDPArgs.pop();
-                    QDP.append("(").append(count).append(") ").append("(").append(op).append(", ").append(QDPFirst).append(", _ ").append(", T").append(count).append(")\n");
-                } else {        // 双目运算符
-                    // 三元组
-                    String TACSecond = TACArgs.pop();      // 先出栈为第二个运算对象
-                    String TACFirst = TACArgs.pop();       // 后出栈为第一个运算对象
-                    TAC.append("(").append(count).append(") ").append("(").append(op).append(", ").append(TACFirst).append(", ").append(TACSecond).append(")\n");
+                        // 四元组
+                        String QDPFirst = QDPArgs.pop();
+                        QDP.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(QDPFirst).append(", _ ").append(", T").append(count).append(")\n");
+                    } else if (isBinaryOperator(tmp)) {        // 双目运算符
+                        // 三元组
+                        String TACSecond = TACArgs.pop();      // 先出栈为第二个运算对象
+                        String TACFirst = TACArgs.pop();       // 后出栈为第一个运算对象
+                        TAC.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(TACFirst).append(", ").append(TACSecond).append(")\n");
 
-                    // 四元组
-                    String QDPSecond = QDPArgs.pop();
-                    String QDPFirst = QDPArgs.pop();
-                    QDP.append("(").append(count).append(") ").append("(").append(op).append(", ").append(QDPFirst).append(", ").append(QDPSecond).append(", T").append(count).append(")\n");
+                        // 四元组
+                        String QDPSecond = QDPArgs.pop();
+                        String QDPFirst = QDPArgs.pop();
+                        QDP.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(QDPFirst).append(", ").append(QDPSecond).append(", T").append(count).append(")\n");
+                    }
+
+                    TACArgs.push("(" + count + ")");
+                    QDPArgs.push("T" + count);
                 }
-
-                TACArgs.push("(" + count + ")");
-                QDPArgs.push("T" + count);
-                op = new StringBuilder();
+                tmp = "";
+            } else {
+                tmp += IP.charAt(i);
             }
             ++i;
         }
@@ -144,17 +135,6 @@ public class ExpressionTrans {
         ans[0] = TAC.toString();
         ans[1] = QDP.toString();
         return ans;
-    }
-
-    // 清除空格
-    private String ClearSpaces(String text) {
-        StringBuilder ans = new StringBuilder();
-        int len = text.length();
-        for (int i = 0; i < len; ++i) {
-            if (text.charAt(i) == ' ') continue;
-            ans.append(text.charAt(i));
-        }
-        return ans.toString();
     }
 
     // 检查逆波兰式是否合法
@@ -168,24 +148,35 @@ public class ExpressionTrans {
             if (IP.charAt(i) == ' ') {
                 if (!isOperator(tmp)) {
                     args.push(tmp);
-                } else {
-                    if (SingleOperator.contains(tmp) && args.size() < 1) return false;
-                    else if (BinaryOperator.contains(tmp)) {
+                } else if (isOperator(tmp)) {
+                    if (isSingleOperator(tmp) && args.size() < 1) return false;
+                    else if (isBinaryOperator(tmp)) {
                         if (args.size() < 2) return false;
                         args.pop();
-                    } else if (TernaryOperator.contains(tmp)) {
+                    } else if (isTernaryOperator(tmp)) {
                         if (args.size() < 3) return false;
                         args.pop();
                         args.pop();
                     }
                 }
-                ++i;
                 tmp = "";
             } else {
-                tmp += IP.charAt(i++);
+                tmp += IP.charAt(i);
             }
+            ++i;
         }
         return args.size() == 1;
+    }
+
+    // 清除空格
+    private String ClearSpaces(String text) {
+        StringBuilder ans = new StringBuilder();
+        int len = text.length();
+        for (int i = 0; i < len; ++i) {
+            if (text.charAt(i) == ' ') continue;
+            ans.append(text.charAt(i));
+        }
+        return ans.toString();
     }
 
     private boolean isDigit(char ch) {
@@ -195,9 +186,19 @@ public class ExpressionTrans {
         if (ch >= 'a' && ch <= 'z') return true;
         return ch >= 'A' && ch <= 'Z';
     }
-    private boolean isOperator(String st) {
-        return SingleOperator.contains(st) || BinaryOperator.contains(st)
-                || TernaryOperator.contains(st);
+    public boolean isOperator(String st) {
+        return isSingleOperator(st) || isBinaryOperator(st)
+                || isTernaryOperator(st);
+    }
+
+    public boolean isSingleOperator(String st) {
+        return SingleOperator.contains(st);
+    }
+    public boolean isBinaryOperator(String st) {
+        return BinaryOperator.contains(st);
+    }
+    public boolean isTernaryOperator(String st) {
+        return TernaryOperator.contains(st);
     }
 
     private void initOperator() {
