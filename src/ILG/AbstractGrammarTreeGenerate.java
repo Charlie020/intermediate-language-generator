@@ -17,9 +17,21 @@ public class AbstractGrammarTreeGenerate {
                     Tree.push(root);
                 } else if (ET.isOperator(tmp)) { // 1 2 + 3 =
                     if (ET.isSingleOperator(tmp)) {
-                        TreeNode left = Tree.pop();
-                        TreeNode root = new TreeNode(tmp, left, null);
-                        Tree.push(root);
+                        if (tmp.equals("++_") || tmp.equals("--_")) {
+                            TreeNode right = Tree.pop();
+                            TreeNode root = new TreeNode(tmp.substring(0, 2), new TreeNode("_"), right);
+                            Tree.push(root);
+                        } else {
+                            TreeNode left = Tree.pop();
+                            if (tmp.equals("_++") || tmp.equals("_--")) {
+                                TreeNode root = new TreeNode(tmp.substring(1, 3), left, new TreeNode("_"));
+                                Tree.push(root);
+                            }
+                            else {
+                                TreeNode root = new TreeNode(tmp.substring(1, 3), left, new TreeNode("_"));
+                                Tree.push(root);
+                            }
+                        }
                     } else if (ET.isBinaryOperator(tmp)) {
                         TreeNode right = Tree.pop();
                         TreeNode left = Tree.pop();

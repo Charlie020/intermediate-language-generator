@@ -45,20 +45,35 @@ public class ExpressionTrans {
                 while (!Operator.isEmpty() && !Operator.peek().equals("(")) ans.append(" ").append(Operator.pop());
                 if (!Operator.isEmpty() && Operator.peek().equals("(")) Operator.pop();
             } else if (isOperator(Character.toString(ch))) {
-                if (ans.charAt(ans.length() - 1) == ' ') ans = new StringBuilder(ans.substring(0, ans.length() - 1));
-                ans.append(" ");
+                if (ans.length() >= 1 && ans.charAt(ans.length() - 1) == ' ') ans = new StringBuilder(ans.substring(0, ans.length() - 1));
+                if (ans.length() >= 1) ans.append(" ");
                 op += ch;
                 // 处理某些不只一个字符的运算符
                 if (i + 1 < len && isOperator(Character.toString(text.charAt(i + 1)))) {
                     char cht = text.charAt(i + 1);
                     if (isOperator(op + cht)) { // 处理两个字符的运算符
-                        op += cht;
-                        ++i;
-                        if (i + 1 < len && isOperator(Character.toString(text.charAt(i + 1)))) { // 处理三个字符的运算符
-                            char chtTmp = text.charAt(i + 1);
-                            if (isOperator(op + chtTmp)) {
-                                op += chtTmp;
+                        if ((op + cht).equals("++") || (op + cht).equals("--")) {
+                            if (i - 1 >= 0) {  // a++
+                                if (isLetter(text.charAt(i - 1))) {
+                                    op = "_" + op + cht;
+                                    ++i;
+                                } else if (i + 2 < len && isLetter(text.charAt(i + 2))) {
+                                    op = op + cht + "_";
+                                    ++i;
+                                }
+                            } else {   // ++a
+                                op = op + cht + "_";
                                 ++i;
+                            }
+                        } else {
+                            op += cht;
+                            ++i;
+                            if (i + 1 < len) {
+                                char chtTmp = text.charAt(i + 1);
+                                if (isOperator(op + chtTmp)) {
+                                    op += chtTmp;
+                                    ++i;
+                                }
                             }
                         }
                     }
@@ -77,7 +92,7 @@ public class ExpressionTrans {
 
         // 处理格式
         int idx = ans.length() - 1;
-        while (idx >= 0 && ans.charAt(idx) == ' ') idx--;
+        while (ans.length() >= 1 && idx >= 0 && ans.charAt(idx) == ' ') idx--;
         ans = new StringBuilder(ans.substring(0, idx + 1));
         // 清空运算符栈
         while (Operator.size() != 0) ans.append(" ").append(Operator.pop());
@@ -105,11 +120,15 @@ public class ExpressionTrans {
                     if (isSingleOperator(tmp)) {   // 单目运算符
                         // 三元组
                         String TACFirst = TACArgs.pop();
-                        TAC.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(TACFirst).append(", _ ").append(")\n");
+                        if (tmp.equals("_++") || tmp.equals("_--")) TAC.append("(").append(count).append(") ").append("(").append(tmp.substring(1, 3)).append(", ").append(TACFirst).append(", _ ").append(")\n");
+                        else if (tmp.equals("++_") || tmp.equals("--_")) TAC.append("(").append(count).append(") ").append("(").append(tmp.substring(0, 2)).append(",").append(" _ , ").append(TACFirst).append(")\n");
+                        else TAC.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(TACFirst).append(", _ ").append(")\n");
 
                         // 四元组
                         String QDPFirst = QDPArgs.pop();
-                        QDP.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(QDPFirst).append(", _ ").append(", T").append(count).append(")\n");
+                        if (tmp.equals("_++") || tmp.equals("_--")) QDP.append("(").append(count).append(") ").append("(").append(tmp.substring(1, 3)).append(", ").append(QDPFirst).append(", _ ").append(", T").append(count).append(")\n");
+                        else if (tmp.equals("++_") || tmp.equals("--_")) QDP.append("(").append(count).append(") ").append("(").append(tmp.substring(0, 2)).append(",").append(" _ , ").append(QDPFirst).append(", T").append(count).append(")\n");
+                        else QDP.append("(").append(count).append(") ").append("(").append(tmp).append(", ").append(QDPFirst).append(", _ ").append(", T").append(count).append(")\n");
                     } else if (isBinaryOperator(tmp)) {        // 双目运算符
                         // 三元组
                         String TACSecond = TACArgs.pop();      // 先出栈为第二个运算对象
@@ -205,7 +224,11 @@ public class ExpressionTrans {
     private void initOperator() {
         // 初始化运算符
         SingleOperator.add("++");
+        SingleOperator.add("_++");
+        SingleOperator.add("++_");
         SingleOperator.add("--");
+        SingleOperator.add("_--");
+        SingleOperator.add("--_");
         SingleOperator.add("~");
         SingleOperator.add("!");
 
@@ -243,8 +266,10 @@ public class ExpressionTrans {
         TernaryOperator.add("?:");
 
         // 优先级值越大越优先
-        OperatorPriority.put("++", 15);
-        OperatorPriority.put("--", 15);
+        OperatorPriority.put("_++", 15);
+        OperatorPriority.put("++_", 15);
+        OperatorPriority.put("_--", 15);
+        OperatorPriority.put("--_", 15);
         OperatorPriority.put("~", 15);
         OperatorPriority.put("!", 15);
 

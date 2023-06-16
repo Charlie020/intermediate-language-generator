@@ -34,7 +34,9 @@ public class Panel1 extends JPanel{
                         JOptionPane.showMessageDialog(Panel1.this, "表达式不合法！");
                     } else if (res instanceof String[]) {
                         String[] rest = (String[])res;
-                        Expressions.setText("逆波兰式：\n" + rest[0] + "\n\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
+                        String IPShow = "";
+                        for (int i = 0; i < rest[0].length(); ++i) if (rest[0].charAt(i) != '_') IPShow += rest[0].charAt(i);
+                        Expressions.setText("逆波兰式：\n" + IPShow + "\n\n三元式：\n" + rest[1] + "\n四元式：\n" + rest[2]);
                         AbstractGrammarTreeGenerate AGT = new AbstractGrammarTreeGenerate();
                         TreeNode AGTTree = AGT.TreeGenerate(rest[0]);
                         GrammarTree.setText("抽象语法树：\n" + AGTTree.TreeDisplay()
